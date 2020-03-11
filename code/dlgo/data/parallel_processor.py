@@ -1,6 +1,5 @@
 from __future__ import print_function
 from __future__ import absolute_import
-import os
 import glob
 import os.path
 import tarfile
@@ -8,7 +7,10 @@ import gzip
 import shutil
 import numpy as np
 import multiprocessing
-from os import sys
+import os
+import sys
+stderr = sys.stderr
+sys.stderr = open(os.devnull, 'w')
 from keras.utils import to_categorical
 
 from dlgo.gosgf import Sgf_game

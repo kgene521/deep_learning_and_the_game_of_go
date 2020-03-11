@@ -4,6 +4,14 @@ __pycache__/
 *$py.class
 *.pyc
 
+
+# Tar and gz files
+*.tar.gz
+*.gz
+
+# Serialized numpy arrays
+*.npy
+
 # C extensions
 *.so
 
