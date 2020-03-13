@@ -1,10 +1,9 @@
 from datetime import datetime
-from dlgo.data.parallel_processor import GoDataProcessor
-# from dlgo.data.processor import GoDataProcessor
+# from dlgo.data.parallel_processor import GoDataProcessor
+from dlgo.data.processor import GoDataProcessor
 from dlgo.encoders.oneplane import OnePlaneEncoder
 # from dlgo.encoders.sevenplane import SevenPlaneEncoder
-# from dlgo.encoders.simple import SimpleEncoder
-
+from dlgo.encoders.simple import SimpleEncoder
 from dlgo.networks import small
 # import os
 # import sys
@@ -12,7 +11,7 @@ from dlgo.networks import small
 # sys.stderr = open(os.devnull, 'w')
 from keras.models import Sequential
 from keras.layers.core import Dense
-from keras.callbacks import ModelCheckpoint, CSVLogger, TensorBoard
+from keras.callbacks import ModelCheckpoint
 
 
 def mainmodel():
@@ -23,14 +22,14 @@ def mainmodel():
     num_classes = go_board_rows * go_board_cols
     num_games = 100
 
-    # encoder = SimpleEncoder((go_board_rows, go_board_cols))       # 11 planes
     encoder = OnePlaneEncoder((go_board_rows, go_board_cols))       # 1 plane
     # encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))   # 7 planes
+    # encoder = SimpleEncoder((go_board_rows, go_board_cols))       # 11 planes
 
     processor = GoDataProcessor(encoder=encoder.name())
 
-    generator = processor.load_go_data('train', num_games, use_generator=True)
-    test_generator = processor.load_go_data('test', num_games, use_generator=True)
+    generator = processor.load_go_data('train', num_games)      #, use_generator=True
+    test_generator = processor.load_go_data('test', num_games)  #, use_generator=True
 
     # generator = processor.load_go_data('train', num_games, use_generator=True)
     # test_generator = processor.load_go_data('test', num_games, use_generator=True)
@@ -38,9 +37,15 @@ def mainmodel():
     input_shape = (encoder.num_planes, go_board_rows, go_board_cols)
     network_layers = small.layers(input_shape)
     model = Sequential()
+    mainmodel_start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    print('Inside mainmodel(): before adding all layers: ' + mainmodel_start_time)
 
     for layer in network_layers:
+        mainmodel_start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print('Before model.add(' + layer.name + '): ' + mainmodel_start_time)
         model.add(layer)
+        mainmodel_start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print('After model.add(' + layer.name + '): ' + mainmodel_start_time)
 
     mainmodel_start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     print('Inside mainmodel(): after adding all layers: ' + mainmodel_start_time)
@@ -53,7 +58,7 @@ def mainmodel():
 
     # For more information:
     # https://keras.io/callbacks/
-    epochs = 5
+    epochs = 2
     batch_size = 128
     model.fit_generator(
         # model.fit(
@@ -66,8 +71,8 @@ def mainmodel():
             ModelCheckpoint('data\\checkpoints\\small_model_epoch_{epoch:02d}-{val_loss:.2f}.h5'),
             # EarlyStopping(monitor='accuracy'),
             # ProgbarLogger(),
-            CSVLogger('data\\logs\\training.log'),
-            TensorBoard(log_dir='data\\logs', batch_size=128, write_images=True)
+            # CSVLogger('data\\logs\\training.log'),
+            # TensorBoard(log_dir='data\\logs', batch_size=128, write_images=True)
         ]
     )
     model.evaluate_generator(
