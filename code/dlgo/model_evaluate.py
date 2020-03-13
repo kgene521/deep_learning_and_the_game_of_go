@@ -6,13 +6,13 @@ from dlgo.encoders.oneplane import OnePlaneEncoder
 # from dlgo.encoders.simple import SimpleEncoder
 
 from dlgo.networks import small
-import os
-import sys
-stderr = sys.stderr
-sys.stderr = open(os.devnull, 'w')
+# import os
+# import sys
+# stderr = sys.stderr
+# sys.stderr = open(os.devnull, 'w')
 from keras.models import Sequential
 from keras.layers.core import Dense
-from keras.callbacks import ModelCheckpoint, ProgbarLogger, CSVLogger, TensorBoard
+from keras.callbacks import ModelCheckpoint, CSVLogger, TensorBoard
 
 
 def mainmodel():
@@ -63,10 +63,10 @@ def mainmodel():
         validation_data=test_generator.generate(batch_size, num_classes),
         validation_steps=test_generator.get_num_samples() / batch_size,
         callbacks=[
-            ModelCheckpoint('D:\\Code\\Python\\Go\\code\\dlgo\\data\\checkpoints\\small_model_epoch_{epoch}_{datetime.now().strftime("%d%b%Y-%I%M%S")}.h5'),
+            ModelCheckpoint('data\\checkpoints\\small_model_epoch_{epoch:02d}-{val_loss:.2f}.h5'),
             # EarlyStopping(monitor='accuracy'),
-            ProgbarLogger(),
-            CSVLogger('training_{datetime.now().strftime("%d%b%Y-%I%M%S")}.log'),
+            # ProgbarLogger(),
+            CSVLogger('data\\logs\\training.log'),
             TensorBoard(log_dir='data\\logs', batch_size=128, write_images=True)
         ]
     )

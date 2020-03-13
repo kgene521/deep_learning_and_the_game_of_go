@@ -9,8 +9,8 @@ import numpy as np
 import multiprocessing
 import os
 import sys
-stderr = sys.stderr
-sys.stderr = open(os.devnull, 'w')
+# stderr = sys.stderr
+# sys.stderr = open(os.devnull, 'w')
 from keras.utils import to_categorical
 
 from dlgo.gosgf import Sgf_game

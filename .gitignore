@@ -5,6 +5,11 @@ __pycache__/
 *.pyc
 
 
+# Training data and logs
+logs/
+events.out.tfevents.*
+
+
 # Tar and gz files
 *.tar.gz
 *.gz

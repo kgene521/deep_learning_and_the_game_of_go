@@ -4,7 +4,7 @@ import os
 import sys
 import numpy as np
 stderr = sys.stderr
-sys.stderr = open(os.devnull, 'w')
+# sys.stderr = open(os.devnull, 'w')
 from keras.utils import to_categorical
 
 

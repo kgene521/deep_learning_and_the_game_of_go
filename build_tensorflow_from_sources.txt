@@ -1,0 +1,149 @@
+Build from source on Windows
+https://www.tensorflow.org/install/source_windows
+https://www.tensorflow.org/install/pip
+Older but helpful:
+https://stackoverflow.com/questions/39023581/tensorflow-cuda-compute-capability-3-0-the-minimum-required-cuda-capability-is
+
+
+Requires Python 3.5–3.7 and pip >= 19.0
+Tensorflow 2.0 requires Bazel 0.26.1 maximum
+
+
+python3 --version
+pip3 --version
+virtualenv --version
+
+ Install the Microsoft Visual C++ Redistributable for Visual Studio 2015, 2017, and 2019. Starting with the TensorFlow 2.1.0 version, the msvcp140_1.dll file is required from this package (which may not be provided from older redistributable packages). The redistributable comes with Visual Studio 2019 but can be installed separately:
+
+    Go to the Microsoft Visual C++ downloads,
+    Scroll down the page to the Visual Studio 2015, 2017 and 2019 section.
+    Download and install the Microsoft Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019 for your platform.
+
+Make sure long paths are enabled on Windows.
+
+Important: 64-bit Python ONLY!
+Install the 64-bit Python 3 release for Windows (use custom installation and select pip as an optional feature).
+
+pip list  # show packages installed
+
+# CUDA: Install both CUDA Toolkit (9.0) and cuDNN (7.6.5 for Maxwell, 5.2 capability for Windows)
+CUDA: Install both CUDA Toolkit (10.0) and cuDNN (7.6.5 for Maxwell, 5.2 capability for Windows)
+
+
+
+CuDNN is a zip file, unzip and copy DLL to CUDAToolKit\bin, cudnn.h to CUDAToolKit\include and lib to CUDAToolKit\lib
+
+
+
+
+Install the TensorFlow pip package
+
+Python 3.7 GPU support 	https://storage.googleapis.com/tensorflow/windows/gpu/tensorflow_gpu-2.1.0-cp37-cp37m-win_amd64.whl
+Python 3.7 CPU-only 	https://storage.googleapis.com/tensorflow/windows/cpu/tensorflow_cpu-2.1.0-cp37-cp37m-win_amd64.whl
+
+
+Install from Source (Windows 8.1)
+pip install pip six numpy wheel setuptools mock 'future>=0.17.1'
+pip install keras_applications --no-deps
+pip install keras_preprocessing --no-deps
+
+git clone https://github.com/tensorflow/tensorflow.git
+cd tensorflow
+
+git checkout r2.0
+
+Use: CUDA, /arch:AVX2, specifically indicate CUDA compute capability: 5.2 (Maxwell for Titan X installed)
+
+the rest of the options are defaults
+configure
+
+After running configure open tf_configure.bazelrc and change from true to false. This will help with minimum CUDA cap. 7.0 warning
+build:xla --define with_xla_support=false
+
+
+Set the environment variable to display errors only and filter out warnings, info, etc.: 
+TF_CPP_MIN_LOG_LEVEL=2 
+
+Set the environment variable to configure compute capability in addition to answering it during the configure phase earlier:
+TF_CUDA_COMPUTE_CAPABILITIES=5.2
+
+
+Compile tensorflow with the options:
+
+	# https://github.com/tensorflow/tensorflow/issues/27576
+	#27706
+
+	Summary:
+	There is a bug in the cudafe++ binary that comes with CUDA 10.0.
+	We had to install both cuda 10 and cuda 10.1 and use the cudafe++ binary from 10.1 on windows.
+
+
+	# local_resources: RAM in MB, cores to utilize, i/o level (1.0 is enough)
+	# jobs instructs bazel to spawn only 1 job to compile c source
+
+	You can "patch" nvcc yourself and still use cuda 10.0
+
+	Download and install CUDA 10.1 update 1, but check only to install nvcc.
+	Rename C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin\cudafe++.exe cudafe++.exe.v10.0
+	Copy C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\bin\cudafe++.exe to C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin\cudafe++.exe
+
+
+bazel build --config=opt --jobs 4 --local_resources 12288,4,1.0 --verbose_failures --config=cuda --define=no_tensorflow_py_deps=true //tensorflow/tools/pip_package:build_pip_package > bazel_build.log
+
+
+=======================================================
+INFO: Elapsed time: 13091.611s, Critical Path: 459.04s  (3.6 hours)
+INFO: 9729 processes: 9729 local.
+INFO: Build completed successfully, 9849 total actions
+=======================================================
+
+
+
+
+Build the pip package in the tensorflow_pip_pkg directory:
+bazel-bin\tensorflow\tools\pip_package\build_pip_package ..\tensorflow_pip_pkg
+
+Get out of the build directory:
+cd ..
+
+Before pip3 installing the new wheel uninstall an old tensorflow:
+pip3 uninstall tensorflow
+
+Install the pip package
+pip3 install tensorflow_pip_pkg\tensorflow-2.0.1-cp37-cp37m-win_amd64.whl
+
+
+To check for GPUs:
+from tensorflow.python.client import device_lib
+
+local_devices = device_lib.list_local_devices()
+
+On successful install here is the output:
+
+>>>
+>>>
+>>> from tensorflow.python.client import device_lib
+>>>
+>>> device_lib.list_local_devices()
+[name: "/device:CPU:0"
+device_type: "CPU"
+memory_limit: 268435456
+locality {
+}
+incarnation: 8009299506024150777
+, name: "/device:GPU:0"
+device_type: "GPU"
+memory_limit: 11129800909
+locality {
+  bus_id: 1
+  links {
+  }
+}
+incarnation: 12008210384591392397
+physical_device_desc: "device: 0, name: GeForce GTX TITAN X, pci bus id: 0000:01:00.0, compute capability: 5.2"
+]
+>>>
+
+
+
+[x.name for x in local_devices]
