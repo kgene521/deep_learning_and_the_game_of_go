@@ -1,10 +1,10 @@
 from datetime import datetime
-# from dlgo.data.parallel_processor import GoDataProcessor
-from dlgo.data.processor import GoDataProcessor
+from dlgo.data.parallel_processor import GoDataProcessor
+# from dlgo.data.processor import GoDataProcessor
 from dlgo.encoders.oneplane import OnePlaneEncoder
 # from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.encoders.simple import SimpleEncoder
-from dlgo.networks import small
+from dlgo.networks import small, large
 # import os
 # import sys
 # stderr = sys.stderr
@@ -22,14 +22,14 @@ def mainmodel():
     num_classes = go_board_rows * go_board_cols
     num_games = 100
 
-    encoder = OnePlaneEncoder((go_board_rows, go_board_cols))       # 1 plane
+    # encoder = OnePlaneEncoder((go_board_rows, go_board_cols))       # 1 plane
     # encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))   # 7 planes
-    # encoder = SimpleEncoder((go_board_rows, go_board_cols))       # 11 planes
+    encoder = SimpleEncoder((go_board_rows, go_board_cols))       # 11 planes
 
     processor = GoDataProcessor(encoder=encoder.name())
 
-    generator = processor.load_go_data('train', num_games)      #, use_generator=True
-    test_generator = processor.load_go_data('test', num_games)  #, use_generator=True
+    generator = processor.load_go_data('train', num_games, use_generator=True)
+    test_generator = processor.load_go_data('test', num_games, use_generator=True)
 
     # generator = processor.load_go_data('train', num_games, use_generator=True)
     # test_generator = processor.load_go_data('test', num_games, use_generator=True)

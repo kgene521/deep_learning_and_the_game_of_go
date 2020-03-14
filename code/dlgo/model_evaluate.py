@@ -4,7 +4,7 @@ from dlgo.data.processor import GoDataProcessor
 from dlgo.encoders.oneplane import OnePlaneEncoder
 # from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.encoders.simple import SimpleEncoder
-from dlgo.networks import small
+from dlgo.networks import small, medium
 # import os
 # import sys
 # stderr = sys.stderr
@@ -35,7 +35,10 @@ def mainmodel():
     # test_generator = processor.load_go_data('test', num_games, use_generator=True)
 
     input_shape = (encoder.num_planes, go_board_rows, go_board_cols)
-    network_layers = small.layers(input_shape)
+
+    # network_layers = small.layers(input_shape)
+    network_layers = medium.layers(input_shape)
+
     model = Sequential()
     mainmodel_start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     print('Inside mainmodel(): before adding all layers: ' + mainmodel_start_time)
