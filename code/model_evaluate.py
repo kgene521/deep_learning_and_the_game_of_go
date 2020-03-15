@@ -1,6 +1,6 @@
 from datetime import datetime
-from dlgo.data.parallel_processor import GoDataProcessor
-# from dlgo.data.processor import GoDataProcessor
+# from dlgo.data.parallel_processor import GoDataProcessor
+from dlgo.data.processor import GoDataProcessor
 from dlgo.encoders.oneplane import OnePlaneEncoder
 # from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.encoders.simple import SimpleEncoder
@@ -11,7 +11,7 @@ from dlgo.networks import small, large
 # sys.stderr = open(os.devnull, 'w')
 from keras.models import Sequential
 from keras.layers.core import Dense
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint, CSVLogger, EarlyStopping, ProgbarLogger
 
 
 def mainmodel():
@@ -26,10 +26,11 @@ def mainmodel():
     # encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))   # 7 planes
     encoder = SimpleEncoder((go_board_rows, go_board_cols))       # 11 planes
 
-    processor = GoDataProcessor(encoder=encoder.name())
+    processor = GoDataProcessor(encoder=encoder.name(),
+                                data_directory='D:\\CODE\\Python\\Go\\code\\dlgo\\data\\tarfiles')
 
-    generator = processor.load_go_data('train', num_games, use_generator=True)
-    test_generator = processor.load_go_data('test', num_games, use_generator=True)
+    generator = processor.load_go_data('train', num_games)      #, use_generator=True
+    test_generator = processor.load_go_data('test', num_games)  #, use_generator=True
 
     # generator = processor.load_go_data('train', num_games, use_generator=True)
     # test_generator = processor.load_go_data('test', num_games, use_generator=True)
@@ -60,18 +61,24 @@ def mainmodel():
     # https://keras.io/callbacks/
     epochs = 2
     batch_size = 128
-    model.fit_generator(
-        # model.fit(
-        generator=generator.generate(batch_size, num_classes),
+    # model.fit_generator(
+    model.fit(
+        # generator=generator.generate(batch_size, num_classes),
+
         epochs=epochs,
         steps_per_epoch=generator.get_num_samples() / batch_size,
         validation_data=test_generator.generate(batch_size, num_classes),
         validation_steps=test_generator.get_num_samples() / batch_size,
+        use_multiprocessing=True,
         callbacks=[
-            ModelCheckpoint('data\\checkpoints\\small_model_epoch_{epoch:02d}-{val_loss:.2f}.h5'),
+            ModelCheckpoint(
+                filepath='D:\\CODE\\Python\\Go\\code\\dlgo\\data\\checkpoints\\small_model_epoch_{epoch:02d}-{val_accuracy:.4f}.h5',
+                monitor='accuracy'
+
+                ),
             # EarlyStopping(monitor='accuracy'),
             # ProgbarLogger(),
-            # CSVLogger('data\\logs\\training.log'),
+            # CSVLogger('D:\\CODE\\Python\\Go\\code\\dlgo\\data\\logs\\training.log', append=True),
             # TensorBoard(log_dir='data\\logs', batch_size=128, write_images=True)
         ]
     )

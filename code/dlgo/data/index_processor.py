@@ -27,7 +27,7 @@ class KGSIndex:
     def __init__(self,
                  kgs_url='http://u-go.net/gamerecords/',
                  index_page='kgs_index.html',
-                 data_directory='data'):
+                 data_directory='D:\\CODE\\Python\\Go\\code\\dlgo\\data\\tarfiles'):
         """Create an index of zip files containing SGF data of actual Go Games on KGS.
 
         Parameters:

@@ -31,13 +31,15 @@ def worker(jobinfo):
 
 
 class GoDataProcessor:
-    def __init__(self, encoder='simple', data_directory='data'):
+    def __init__(self, encoder, data_directory='D:\\CODE\\Python\\Go\\code\\dlgo\\data\\tarfiles'):
         self.encoder_string = encoder
         self.encoder = get_encoder_by_name(encoder, 19)
         self.data_dir = data_directory
 
 # tag::load_generator[]
-    def load_go_data(self, data_type='train', num_samples=1000,
+    # data_type: train or test
+    # num_samples: number of games
+    def load_go_data(self, data_type, num_samples,
                      use_generator=False):
         index = KGSIndex(data_directory=self.data_dir)
         index.download_files()
@@ -47,6 +49,8 @@ class GoDataProcessor:
 
         self.map_to_workers(data_type, data)  # <1>
         if use_generator:
+            if self.data_dir is None:
+                self.data_dir = 'D:\\CODE\\Python\\Go\\code\\dlgo\\data\\tarfiles'
             generator = DataGenerator(self.data_dir, data)
             return generator  # <2>
         else:
@@ -69,6 +73,8 @@ class GoDataProcessor:
         return tar_file
 
     def process_zip(self, zip_file_name, data_file_name, game_list):
+        if self.data_dir is None:
+            self.data_dir = 'D:\\CODE\\Python\\Go\\code\\dlgo\\data\\tarfiles'
         tar_file = self.unzip_data(zip_file_name)
         zip_file = tarfile.open(self.data_dir + '/' + tar_file)
         name_list = zip_file.getnames()
@@ -187,6 +193,8 @@ class GoDataProcessor:
         cores = multiprocessing.cpu_count()  # Determine number of CPU cores and split work load among them
         pool = multiprocessing.Pool(processes=cores)
         p = pool.map_async(worker, zips_to_process)
+        if self.data_dir is None:
+            self.data_dir = 'D:\\CODE\\Python\\Go\\code\\dlgo\\data\\tarfiles'
         try:
             _ = p.get()
         except KeyboardInterrupt:  # Caught keyboard interrupt, terminating workers

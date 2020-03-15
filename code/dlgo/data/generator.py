@@ -10,6 +10,8 @@ from keras.utils import to_categorical
 
 class DataGenerator:
     def __init__(self, data_directory, samples):
+        if data_directory is None:
+            data_directory = 'D:\\CODE\\Python\\Go\\code\\dlgo\\data\\tarfiles'
         self.data_directory = data_directory
         self.samples = samples
         self.files = set(file_name for file_name, index in samples)  # <1>

@@ -22,10 +22,13 @@ from dlgo.data.sampling import Sampler  # <1>
 # <1> Sampler will be used to sample training and test data from files.
 # end::dlgo_imports[]
 
+# if self.data_dir is None:
+#     self.data_dir = 'D:\\CODE\\Python\\Go\\code\\dlgo\\data\\tarfiles'
+
 
 # tag::processor_init[]
 class GoDataProcessor:
-    def __init__(self, encoder='oneplane', data_directory='data'):
+    def __init__(self, encoder='oneplane', data_directory='D:\\CODE\\Python\\Go\\code\\dlgo\\data\\tarfiles'):
         self.encoder = get_encoder_by_name(encoder, 19)
         self.data_dir = data_directory
 # end::processor_init[]
