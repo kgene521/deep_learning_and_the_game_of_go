@@ -9,6 +9,8 @@ __pycache__/
 logs/
 events.out.tfevents.*
 
+# Intermediate models
+*.h5
 
 # Tar and gz files
 *.tar

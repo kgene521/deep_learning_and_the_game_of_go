@@ -38,7 +38,8 @@ def is_point_an_eye(board, point, color):
 
 # <1> An eye is an empty point.
 # <2> All adjacent points must contain friendly stones.
-# <3> We must control 3 out of 4 corners if the point is in the middle of the board; on the edge we must control all corners.
+# <3> We must control 3 out of 4 corners if the point is in the middle of the
+#       board; on the edge we must control all corners.
 # <4> Point is on the edge or corner.
 # <5> Point is in the middle.
 # end::eye[]

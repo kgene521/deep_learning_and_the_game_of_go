@@ -16,17 +16,12 @@ __all__ = [
 
 def get_web_app(bot_map):
     """Create a flask application for serving bot moves.
-
     The bot_map maps from URL path fragments to Agent instances.
-
     The /static path will return some static content (including the
     jgoboard JS).
-
     Clients can get the post move by POSTing json to
     /select-move/<bot name>
-
     Example:
-
     >>> myagent = agent.RandomBot()
     >>> web_app = get_web_app({'random': myagent})
     >>> web_app.run()
